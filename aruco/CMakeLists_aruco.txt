@@ -1,23 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
-project(aruco)
-
-find_package(catkin)
-
-find_package(OpenCV 3 REQUIRED)
-
-catkin_package(
-  INCLUDE_DIRS include
-  LIBRARIES aruco
-)
-
-include_directories(
-  include
-  ${catkin_INCLUDE_DIRS}
-  ${OpenCV_INCLUDE_DIRS}
-)
-
 set(sources
-    aruco_selectoptimalmarkers.cpp
     cameraparameters.cpp
     cvdrawingutils.cpp
     dictionary.cpp
@@ -50,25 +31,8 @@ set(headers
     markerlabelers/svmmarkers.h
 )
 
-add_library(aruco /src/aruco/${sources})
-
-#add_library(aruco
-#  src/aruco/arucofidmarkers.cpp
-#  src/aruco/cvdrawingutils.cpp
-#  src/aruco/cameraparameters.cpp
-#  src/aruco/board.cpp
-#  src/aruco/marker.cpp
-#  src/aruco/boarddetector.cpp
-#  src/aruco/markerdetector.cpp
-#  src/aruco/dictionary.cpp
-#  src/aruco/markermap.cpp
-#)
-
-
-add_executable(optimalmarkers
-  src/aruco/aruco_selectoptimalmarkers.cpp)
-target_link_libraries(optimalmarkers aruco ${catkin_LIBRARIES})
-
+add_library(aruco ${sources} ${headers})
+ 
 set_target_properties(aruco PROPERTIES          # create *nix style library versions + symbolic links
     DEFINE_SYMBOL ARUCO_DSO_EXPORTS
     VERSION ${PROJECT_VERSION}
@@ -77,21 +41,26 @@ set_target_properties(aruco PROPERTIES          # create *nix style library vers
     OUTPUT_NAME "aruco${PROJECT_DLLVERSION}"    # avoid conflicts between library and binary target names
 )
 
+#include(GenerateExportHeader)
+#generate_export_header(aruco)
+
 target_link_libraries(aruco PUBLIC opencv_core)
 target_link_libraries(aruco PRIVATE opencv_imgproc opencv_calib3d opencv_features2d opencv_ml)
 
-#############
-## Install ##
-#############
+INSTALL(TARGETS aruco
+    RUNTIME DESTINATION bin COMPONENT main			# Install the dll file in bin directory
+    LIBRARY DESTINATION lib PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE COMPONENT main
+    ARCHIVE DESTINATION lib COMPONENT main)			# Install the dll.a file in lib directory
 
-install(TARGETS aruco optimalmarkers
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+#install(TARGETS aruco EXPORT arucoConfig
+#    RUNTIME DESTINATION bin
+#    LIBRARY DESTINATION lib PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+#    ARCHIVE DESTINATION lib
+#)
+
+install(FILES ${headers}
+    DESTINATION include/aruco
 )
 
-install(DIRECTORY include/
-   DESTINATION ${CATKIN_GLOBAL_INCLUDE_DESTINATION}
-   FILES_MATCHING PATTERN /aruco/${headers}
-)
-
+#install(EXPORT arucoConfig DESTINATION "share/aruco/cmake")
+ 

@@ -45,6 +45,8 @@ or implied, of Rafael Muñoz Salinas.
 #include <aruco_ros/aruco_ros_utils.h>
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_datatypes.h>
+#include <tf2/LinearMath/Quaternion.h>
+#include <tf/tf.h>
 
 #include <dynamic_reconfigure/server.h>
 #include <aruco_ros/ArucoThresholdConfig.h>
@@ -56,10 +58,12 @@ cv::Mat inImage;
 aruco::CameraParameters camParam;
 bool useRectifiedImages, normalizeImageIllumination;
 int dctComponentsToRemove;
+
 MarkerDetector mDetector;
 std::vector<Marker> markers;
 ros::Subscriber cam_info_sub;
 bool cam_info_received;
+
 image_transport::Publisher image_pub;
 image_transport::Publisher debug_pub;
 ros::Publisher pose_pub1;
@@ -74,6 +78,10 @@ int marker_id2;
 
 void image_callback(const sensor_msgs::ImageConstPtr& msg)
 {
+  tf2::Quaternion q;
+  float roll, pitch, yaw;
+  Vec3f euler;
+
   double ticksBefore = cv::getTickCount();
   static tf::TransformBroadcaster br;
   if(cam_info_received)
@@ -92,6 +100,10 @@ void image_callback(const sensor_msgs::ImageConstPtr& msg)
         //pal_vision_util::dctNormalization(inImage, inImageNorm, dctComponentsToRemove);
         //inImage = inImageNorm;
       }
+      //****************************************
+      //mDetector.setDictionary("ARUCO_MIP_36h12");
+      mDetector.setDictionary("ARUCO");
+      //****************************************
 
       //detection results will go into "markers"
       markers.clear();
@@ -103,25 +115,44 @@ void image_callback(const sensor_msgs::ImageConstPtr& msg)
         // only publishing the selected marker
         if ( markers[i].id == marker_id1 )
         {
-          tf::Transform transform = aruco_ros::arucoMarker2Tf(markers[i]);
-          br.sendTransform(tf::StampedTransform(transform, curr_stamp,
-                                                parent_name, child_name1));
+          
+          // markers[i].Tvec.ptr<float>(0)[0] = -markers[i].Tvec.ptr<float>(0)[0];
+          // markers[i].Tvec.ptr<float>(1)[0] = -markers[i].Tvec.ptr<float>(1)[0];
+          // markers[i].Tvec.ptr<float>(2)[0] = -markers[i].Tvec.ptr<float>(2)[0];
+
+          //tf::Transform transform = aruco_ros::arucoMarker2Tf(markers[i]);
+          transform.setOrigin( tf::Vector3(0.0, 0.0, 1.0) );
+          transform.setRotation( tf::Quaternion(0, 0, 0, 0) );
+          //br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "turtle1", "carrot1"));
+          br.sendTransform(tf::StampedTransform(transform, curr_stamp, parent_name, child_name1)); // parent_name = drone_base - child_name1 = tag_base_1
+
           geometry_msgs::Pose poseMsg;
+          // poseMsg.position.x = markers[i].Tvec.at<float>(0,0);
+          // poseMsg.position.y = markers[i].Tvec.at<float>(1,0);
+          // poseMsg.position.z = markers[i].Tvec.at<float>(2,0);
           tf::poseTFToMsg(transform, poseMsg);
+
+          // poseMsg.orientation.x = 0;
+          // poseMsg.orientation.y = 0;
+          // poseMsg.orientation.z = 0;
+          // poseMsg.orientation.w = 1;
           pose_pub1.publish(poseMsg);
         }
         else if ( markers[i].id == marker_id2 )
         {
-          tf::Transform transform = aruco_ros::arucoMarker2Tf(markers[i]);
-          br.sendTransform(tf::StampedTransform(transform, curr_stamp,
-                                                parent_name, child_name2));
+          tf::Transform transform2 = aruco_ros::arucoMarker2Tf(markers[i]);
+          transform2.setOrigin( tf::Vector3(0.0, 0.0, 1.0) );
+          transform2.setRotation( tf::Quaternion(0, 0, 0, 1) );
+          br.sendTransform(tf::StampedTransform(transform2, curr_stamp,
+                                                child_name1, child_name2));
           geometry_msgs::Pose poseMsg;
-          tf::poseTFToMsg(transform, poseMsg);
+          tf::poseTFToMsg(transform2, poseMsg);
           pose_pub2.publish(poseMsg);
         }
 
         // but drawing all the detected markers
-        markers[i].draw(inImage,Scalar(0,0,255),2);
+        markers[i].draw(inImage,Scalar(0,0,255),3);
+        //CvDrawingUtils::draw3dAxis(inImage, markers[i], camParam);
       }
 
       //paint a circle in the center of the image
@@ -180,13 +211,13 @@ void image_callback(const sensor_msgs::ImageConstPtr& msg)
       }
 
       //draw a 3d cube in each marker if there is 3d info
-      if(camParam.isValid() && marker_size!=-1)
-      {
-        for(unsigned int i=0; i<markers.size(); ++i)
-        {
-          CvDrawingUtils::draw3dCube(inImage, markers[i], camParam);
-        }
-      }
+      // if(camParam.isValid() && marker_size!=-1)
+      // {
+      //   for(unsigned int i=0; i<markers.size(); ++i)
+      //   {
+      //     CvDrawingUtils::draw3dCube(inImage, markers[i], camParam);
+      //   }
+      // }
 
       if(image_pub.getNumSubscribers() > 0)
       {

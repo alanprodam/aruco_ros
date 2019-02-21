@@ -1,0 +1,30 @@
+<launch>
+
+    <!-- <arg name="markerId"        default="94"/> -->
+    <arg name="marker1Id"         default="5"/>
+    <arg name="marker2Id"         default="90"/>
+    <arg name="markerSize"        default="0.048"/>    <!-- in m -->
+    <arg name="dct_normalization" default="True" />
+    <arg name="dct_filter_size"   default="2" />
+    <arg name="marker1_frame"     default="tag_1" />
+    <arg name="marker2_frame"     default="tag_2" />
+    <arg name="corner_refinement" default="SUBPIX"/>
+    
+    <node pkg="tf" type="static_transform_publisher" name="tf_bebop_ned_to_enu" args="10 0 0 0 3.1415 drone_base drone_base2 100" />
+
+    <node pkg="aruco_ros" type="double" name="aruco_double_bebop">
+        <remap from="/camera_info" to="/bebop/camera_info" />
+        <remap from="/image" to="/bebop/image_raw" />
+        <param name="image_is_rectified" value="True"/>
+        <param name="marker_size" value="$(arg markerSize)"/>
+        <param name="marker_id1" value="$(arg marker1Id)"/>
+        <param name="marker_id2" value="$(arg marker2Id)"/>
+        <param name="normalizeImage" value="$(arg dct_normalization)"/>
+        <param name="dct_components_to_remove" value="$(arg dct_filter_size)"/>
+        <param name="parent_name" value="drone_base2"/>
+        <param name="child_name1" value="$(arg marker1_frame)" />
+        <param name="child_name2" value="$(arg marker2_frame)" />
+        <param name="corner_refinement" value="$(arg corner_refinement)" />
+    </node>
+
+</launch>

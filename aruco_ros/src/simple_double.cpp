@@ -120,9 +120,9 @@ void image_callback(const sensor_msgs::ImageConstPtr& msg)
           // markers[i].Tvec.ptr<float>(1)[0] = -markers[i].Tvec.ptr<float>(1)[0];
           // markers[i].Tvec.ptr<float>(2)[0] = -markers[i].Tvec.ptr<float>(2)[0];
 
-          //tf::Transform transform = aruco_ros::arucoMarker2Tf(markers[i]);
-          transform.setOrigin( tf::Vector3(0.0, 0.0, 1.0) );
-          transform.setRotation( tf::Quaternion(0, 0, 0, 0) );
+          tf::Transform transform = aruco_ros::arucoMarker2Tf(markers[i]);
+          //transform.setOrigin( tf::Vector3(0.0, 0.0, 1.0) );
+          //transform.setRotation( tf::Quaternion(0, 0, 0, 0) );
           //br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "turtle1", "carrot1"));
           br.sendTransform(tf::StampedTransform(transform, curr_stamp, parent_name, child_name1)); // parent_name = drone_base - child_name1 = tag_base_1
 
@@ -140,13 +140,13 @@ void image_callback(const sensor_msgs::ImageConstPtr& msg)
         }
         else if ( markers[i].id == marker_id2 )
         {
-          tf::Transform transform2 = aruco_ros::arucoMarker2Tf(markers[i]);
-          transform2.setOrigin( tf::Vector3(0.0, 0.0, 1.0) );
-          transform2.setRotation( tf::Quaternion(0, 0, 0, 1) );
-          br.sendTransform(tf::StampedTransform(transform2, curr_stamp,
+          tf::Transform transform = aruco_ros::arucoMarker2Tf(markers[i]);
+          //transform.setOrigin( tf::Vector3(0.0, 0.0, 1.0) );
+          //transform.setRotation( tf::Quaternion(0, 0, 0, 1) );
+          br.sendTransform(tf::StampedTransform(transform, curr_stamp,
                                                 child_name1, child_name2));
           geometry_msgs::Pose poseMsg;
-          tf::poseTFToMsg(transform2, poseMsg);
+          tf::poseTFToMsg(transform, poseMsg);
           pose_pub2.publish(poseMsg);
         }
 

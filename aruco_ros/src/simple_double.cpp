@@ -140,13 +140,13 @@ void image_callback(const sensor_msgs::ImageConstPtr& msg)
         }
         else if ( markers[i].id == marker_id2 )
         {
-          tf::Transform transform = aruco_ros::arucoMarker2Tf(markers[i]);
-          //transform.setOrigin( tf::Vector3(0.0, 0.0, 1.0) );
-          //transform.setRotation( tf::Quaternion(0, 0, 0, 1) );
-          br.sendTransform(tf::StampedTransform(transform, curr_stamp,
+          tf::Transform transform2 = aruco_ros::arucoMarker2Tf(markers[i]);
+          transform2.setOrigin( tf::Vector3(0.0, 0.0, 1.0) );
+          transform2.setRotation( tf::Quaternion(0, 0, 0, 1) );
+          br.sendTransform(tf::StampedTransform(transform2, curr_stamp,
                                                 child_name1, child_name2));
           geometry_msgs::Pose poseMsg;
-          tf::poseTFToMsg(transform, poseMsg);
+          tf::poseTFToMsg(transform2, poseMsg);
           pose_pub2.publish(poseMsg);
         }
 

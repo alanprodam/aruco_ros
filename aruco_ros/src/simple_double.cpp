@@ -104,7 +104,8 @@ void image_callback(const sensor_msgs::ImageConstPtr& msg)
       //mDetector.setDictionary("ARUCO_MIP_36h12");
       mDetector.setDictionary("ARUCO");
       //****************************************
-
+      tf::Transform transform;
+      bool flag_transform_cam=false;
       //detection results will go into "markers"
       markers.clear();
       //Ok, let's detect
@@ -120,7 +121,11 @@ void image_callback(const sensor_msgs::ImageConstPtr& msg)
           // markers[i].Tvec.ptr<float>(1)[0] = -markers[i].Tvec.ptr<float>(1)[0];
           // markers[i].Tvec.ptr<float>(2)[0] = -markers[i].Tvec.ptr<float>(2)[0];
 
-          tf::Transform transform = aruco_ros::arucoMarker2Tf(markers[i]);
+          // markers[i].Tvec.ptr<float>(0)[0] = -markers[i].Tvec.ptr<float>(0)[0];
+          // markers[i].Tvec.ptr<float>(1)[0] = -markers[i].Tvec.ptr<float>(1)[0];
+          // markers[i].Tvec.ptr<float>(2)[0] = -markers[i].Tvec.ptr<float>(2)[0];
+
+          transform = aruco_ros::arucoMarker2Tf(markers[i]);
           //transform.setOrigin( tf::Vector3(0.0, 0.0, 1.0) );
           //transform.setRotation( tf::Quaternion(0, 0, 0, 0) );
           //br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "turtle1", "carrot1"));
@@ -131,7 +136,7 @@ void image_callback(const sensor_msgs::ImageConstPtr& msg)
           // poseMsg.position.y = markers[i].Tvec.at<float>(1,0);
           // poseMsg.position.z = markers[i].Tvec.at<float>(2,0);
           tf::poseTFToMsg(transform, poseMsg);
-
+          flag_transform_cam=true;
           // poseMsg.orientation.x = 0;
           // poseMsg.orientation.y = 0;
           // poseMsg.orientation.z = 0;
@@ -140,19 +145,23 @@ void image_callback(const sensor_msgs::ImageConstPtr& msg)
         }
         else if ( markers[i].id == marker_id2 )
         {
-          tf::Transform transform2 = aruco_ros::arucoMarker2Tf(markers[i]);
-          transform2.setOrigin( tf::Vector3(0.0, 0.0, 1.0) );
-          transform2.setRotation( tf::Quaternion(0, 0, 0, 1) );
-          br.sendTransform(tf::StampedTransform(transform2, curr_stamp,
-                                                child_name1, child_name2));
-          geometry_msgs::Pose poseMsg;
-          tf::poseTFToMsg(transform2, poseMsg);
-          pose_pub2.publish(poseMsg);
+          tf::Transform tfcar = aruco_ros::arucoMarker2Tf(markers[i]);
+          if(flag_transform_cam){
+            tf::Transform tfcarAruco = tfcar.inverseTimes(transform);
+            
+            //transform2.setOrigin( tf::Vector3(0.0, 0.0, 1.0) );
+            //transform2.setRotation( tf::Quaternion(0, 0, 0, 1) );
+            br.sendTransform(tf::StampedTransform(tfcarAruco, curr_stamp,
+                                                  child_name1, child_name2));
+            geometry_msgs::Pose poseMsg;
+            tf::poseTFToMsg(tfcarAruco, poseMsg);
+            pose_pub2.publish(poseMsg);
+          }
         }
 
         // but drawing all the detected markers
         markers[i].draw(inImage,Scalar(0,0,255),3);
-        //CvDrawingUtils::draw3dAxis(inImage, markers[i], camParam);
+        CvDrawingUtils::draw3dAxis(inImage, markers[i], camParam);
       }
 
       //paint a circle in the center of the image

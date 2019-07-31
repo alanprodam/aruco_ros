@@ -5,6 +5,7 @@ Software package and ROS wrappers of the [Aruco][1] Augmented Reality marker det
 
 
 ### Features
+
 <img align="right" src="https://raw.github.com/pal-robotics/aruco_ros/master/aruco_ros/etc/marker_in_hand.jpg" />
 
  * High-framerate tracking of AR markers
@@ -21,79 +22,94 @@ Software package and ROS wrappers of the [Aruco][1] Augmented Reality marker det
  * Object pose estimation
  * Visual servoing: track object and hand at the same time
 
-<img align="right" src="https://raw.github.com/pal-robotics/aruco_ros/master/aruco_ros/etc/reem_gazebo_floating_marker_world.png"/>
 
-### Install a driver USB_CAM and create the file 'head_camera.yaml'
+### Install a driver USB_CAM
     
-    You can also use sudo apt-get install ros-<distribution>-usb-cam, replacing <distribution> with your desired distribution. This will install the package to your `/opt/ros/kinetic/lib directory`.
+You can also use sudo apt-get install ros-<distribution>-usb-cam, replacing <distribution> with your desired distribution. This will install the package to your `/opt/ros/kinetic/lib directory`.
 
-    ```
-    sudo apt-get install ros-kinetic-usb-cam
-    ```
+```
+sudo apt-get install ros-kinetic-usb-cam
+```
 
-    Right now, Like you have mentioned the usb_cam has source code for wet build (catkin build). you just need to do the following to build it from source. (Note: I assume you are using ROS hydro or Indigo, It should work on groovy as well may be you can try it). But all that said, here you go:
+Another option is make a download the repository the usb_cam that has source code for wet build (catkin build). you just need to do the following to build it from source, here you go:
 
-    ```
-    mkdir -p ~/catkin-ws/src
-    cd ~/catkin-ws/src
-    ```
+```
+mkdir -p ~/catkin-ws/src
+cd ~/catkin-ws/src
+```
 
-    ```
-    git clone https://github.com/bosch-ros-pkg/usb_cam.git
-    cd ..
-    catkin_make
-    source ~/catkin-ws/devel/setup.bash
-    roscd usb_cam
-    ```
+```
+git clone https://github.com/bosch-ros-pkg/usb_cam.git
+cd ..
+catkin_make
+source ~/catkin-ws/devel/setup.bash
+roscd usb_cam
+```
 
-    roscore on a new terminal 
-    
-    ```
-    roscore
-    ```
+* Test the usb_cam
 
-    and then in the terminal where you $ source 'd your usb_cam code run:
+You should rus the roscore on a new terminal 
 
-    ```
-    rosrun usb_cam usb_cam_node
-    ```
-    
-    Make sure you have your camera connected, before running the above command!!! you view the captured image on rviz,
+```
+roscore
+```
 
-    ```
-    rosrun rviz rviz
-    ```
+and then in the terminal where you $ source 'd your usb_cam code run:
 
-    Create and save the file 'head_camera.yaml' that must be created in folder .ros/camera_info
+```
+rosrun usb_cam usb_cam_node
+```
 
-    ```
-    cd .ros/
-    mkdir camera_info
-    subl camera_info/head_camera.yaml
-    ```
-    
-    ```
-    image_width: 856
-    image_height: 480
-    camera_name: usb_cam
-    camera_matrix:
-      rows: 3
-      cols: 3
-      data: [537.292878, 0.000000, 427.331854, 0.000000, 527.000348, 240.226888, 0.000000, 0.000000, 1.000000]
-    distortion_model: plumb_bob
-    distortion_coefficients:
-      rows: 1
-      cols: 5
-      data: [0.004974, -0.000130, -0.001212, 0.002192, 0.000000]
-    rectification_matrix:
-      rows: 3
-      cols: 3
-      data: [1.000000, 0.000000, 0.000000, 0.000000, 1.000000, 0.000000, 0.000000, 0.000000, 1.000000]
-    projection_matrix:
-      rows: 3
-      cols: 4
-      data: [539.403503, 0.000000, 429.275072, 0.000000, 0.000000, 529.838562, 238.941372, 0.000000, 0.000000, 0.000000, 1.000000, 0.000000]
-    ```
+Make sure you have your camera connected, before running the above command!!!
+
+```
+ls /dev/video0
+```
+
+or
+
+```
+ls /dev/video1
+```
+
+You view the captured image on rviz
+
+```
+rosrun rviz rviz
+```
+
+### Create the file 'head_camera.yaml'
+
+First you should create a folder in '.ros/camera_info'. After that, save the file 'head_camera.yaml'
+
+```
+cd .ros/
+mkdir camera_info
+subl camera_info/head_camera.yaml
+```
+
+```
+image_width: 856
+image_height: 480
+camera_name: usb_cam
+camera_matrix:
+  rows: 3
+  cols: 3
+  data: [537.292878, 0.000000, 427.331854, 0.000000, 527.000348, 240.226888, 0.000000, 0.000000, 1.000000]
+distortion_model: plumb_bob
+distortion_coefficients:
+  rows: 1
+  cols: 5
+  data: [0.004974, -0.000130, -0.001212, 0.002192, 0.000000]
+rectification_matrix:
+  rows: 3
+  cols: 3
+  data: [1.000000, 0.000000, 0.000000, 0.000000, 1.000000, 0.000000, 0.000000, 0.000000, 1.000000]
+projection_matrix:
+  rows: 3
+  cols: 4
+  data: [539.403503, 0.000000, 429.275072, 0.000000, 0.000000, 529.838562, 238.941372, 0.000000, 0.000000, 0.000000, 1.000000, 0.000000]
+```
 
 ### ROS API
 

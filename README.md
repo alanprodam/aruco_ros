@@ -25,7 +25,7 @@ Software package and ROS wrappers of the [Aruco][1] Augmented Reality marker det
 
 ### Install a driver USB_CAM
     
-You can also use sudo apt-get install ros-<distribution>-usb-cam, replacing <distribution> with your desired distribution. This will install the package to your `/opt/ros/kinetic/lib directory`.
+You can use `sudo apt-get install ros-<distribution>-usb-cam`, replacing <distribution> with your desired distribution. This will install the package to your `/opt/ros/kinetic/lib directory`.
 
 ```
 sudo apt-get install ros-kinetic-usb-cam
@@ -36,9 +36,6 @@ Another option is make a download the repository the usb_cam that has source cod
 ```
 mkdir -p ~/catkin-ws/src
 cd ~/catkin-ws/src
-```
-
-```
 git clone https://github.com/bosch-ros-pkg/usb_cam.git
 cd ..
 catkin_make

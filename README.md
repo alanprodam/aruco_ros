@@ -130,6 +130,10 @@ Make the download of Calibration Checkerboard:
 
 <img align="bottom" src="https://github.com/alanprodam/aruco_ros/blob/aruco-3.0.4/aruco_ros/etc/calibration.jpg" />
 
+### Export Image Data from a Bag File
+
+* [How to export image](http://wiki.ros.org/rosbag/Tutorials/Exporting%20image%20and%20video%20data)
+
 ### ROS API
 
 #### Messages

@@ -116,6 +116,14 @@ You should follow the steps of documentation above:
 
 * [Tutorials(Another Option) - MonocularCalibration](http://ros-developer.com/2017/04/23/camera-calibration-with-ros/)
 
+```
+roslaunch usb_cam usb_cam-test.launch
+```
+
+```
+rosrun camera_calibration cameracalibrator.py --size 8x6 --square 0.02415 image:=/usb_cam/image_raw camera:=/usb_cam --no-service-check
+```
+
 Make the download of Calibration Checkerboard:
 
 * [Calibration Checkerboard Collection](https://markhedleyjones.com/projects/calibration-checkerboard-collection)

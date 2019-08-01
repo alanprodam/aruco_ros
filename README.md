@@ -120,7 +120,7 @@ Make the download of Calibration Checkerboard:
 
 * [Calibration Checkerboard Collection](https://markhedleyjones.com/projects/calibration-checkerboard-collection)
 
-<img align="right" src="https://github.com/alanprodam/aruco_ros/blob/aruco-3.0.4/aruco_ros/etc/marker26_5cm.jpg" />
+<img align="bottom" src="https://github.com/alanprodam/aruco_ros/blob/aruco-3.0.4/aruco_ros/etc/calibration.jpg" />
 
 ### ROS API
 

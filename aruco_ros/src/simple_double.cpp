@@ -285,8 +285,8 @@ int main(int argc,char **argv)
   cam_info_sub = nh.subscribe("/camera_info", 1, &cam_info_callback);
 
   cam_info_received = false;
-  image_pub = it.advertise("result", 1);
-  debug_pub = it.advertise("debug", 1);
+  image_pub = it.advertise("result_img", 1);
+  debug_pub = it.advertise("debug_img", 1);
   pose_pub1 = nh.advertise<geometry_msgs::Pose>("pose", 100);
   pose_pub2 = nh.advertise<geometry_msgs::Pose>("pose2", 100);
 

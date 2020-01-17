@@ -152,7 +152,7 @@ void image_callback(const sensor_msgs::ImageConstPtr& msg)
 
         // but drawing all the detected markers
         markers[i].draw(inImage,Scalar(0,0,255),3);
-        //CvDrawingUtils::draw3dAxis(inImage, markers[i], camParam);
+        CvDrawingUtils::draw3dAxis(inImage, markers[i], camParam);
       }
 
       //paint a circle in the center of the image
